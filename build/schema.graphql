@@ -1,0 +1,21 @@
+type CreatedToken @entity {
+  id: ID!
+  count: BigInt
+  creator: ID!
+  timestamp: BigInt!
+  contractAddress: Bytes! # address
+  synthetics: [Synthetic!]! @derivedFrom(field: "count")
+}
+
+type Synthetic @entity {
+  id: ID!
+  count: [CreatedToken]!
+  # count: [CreatedToken!]! @derivedFrom(field: "contractAddress" )
+  creator: Bytes!
+  symbol: String! # string
+  newNav: BigInt! # int256
+  newTokenPrice: BigInt!
+  timestamp: BigInt!
+  name: String! # string
+  totalSupply: BigDecimal!
+}
