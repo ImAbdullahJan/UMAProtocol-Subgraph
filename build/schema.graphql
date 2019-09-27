@@ -1,21 +1,56 @@
-type CreatedToken @entity {
+type SyntheticTokenFacility @entity {
   id: ID!
-  count: BigInt
   creator: ID!
   timestamp: BigInt!
   contractAddress: Bytes! # address
-  synthetics: [Synthetic!]! @derivedFrom(field: "count")
+  synthetic: SyntheticTokenMint
 }
 
-type Synthetic @entity {
+type SyntheticTokenMint @entity {
   id: ID!
-  count: [CreatedToken]!
-  # count: [CreatedToken!]! @derivedFrom(field: "contractAddress" )
+  token: SyntheticTokenFacility! @derivedFrom(field: "synthetic")
   creator: Bytes!
   symbol: String! # string
-  newNav: BigInt! # int256
-  newTokenPrice: BigInt!
+  tokensCreated: BigInt! # uint256
   timestamp: BigInt!
   name: String! # string
-  totalSupply: BigDecimal!
+  tokenBalance: BigInt!
+}
+
+type NetAssetValueUpdated @entity {
+  id: ID!
+  symbol: String!
+  newNav: BigInt!
+  newTokenPrice: BigInt!
+}
+
+type SyntheticContractSettled @entity{
+  id: ID!
+  symbol: String!
+  settleTime: BigInt!
+  finalNav: BigInt!
+}
+
+type SyntheticContractExpired @entity {
+  id: ID!
+  symbol: String!
+  expiryTime: BigInt!
+}
+
+type SyntheticTokensRedeemed @entity {
+  id: ID!
+  symbol: String!
+  numTokensRedeemed: BigInt!
+}
+
+type MarginCurrencyDeposited @entity {
+  id: ID!
+  symbol: String!
+  amount: BigInt!
+}
+
+type MarginCurrencyWithdrawn @entity {
+  id: ID!
+  symbol: String!
+  amount: BigInt!
 }

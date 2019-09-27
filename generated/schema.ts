@@ -12,7 +12,7 @@ import {
   BigDecimal
 } from "@graphprotocol/graph-ts";
 
-export class CreatedToken extends Entity {
+export class SyntheticTokenFacility extends Entity {
   constructor(id: string) {
     super();
     this.set("id", Value.fromString(id));
@@ -20,17 +20,23 @@ export class CreatedToken extends Entity {
 
   save(): void {
     let id = this.get("id");
-    assert(id !== null, "Cannot save CreatedToken entity without an ID");
+    assert(
+      id !== null,
+      "Cannot save SyntheticTokenFacility entity without an ID"
+    );
     assert(
       id.kind == ValueKind.STRING,
-      "Cannot save CreatedToken entity with non-string ID. " +
+      "Cannot save SyntheticTokenFacility entity with non-string ID. " +
         'Considering using .toHex() to convert the "id" to a string.'
     );
-    store.set("CreatedToken", id.toString(), this);
+    store.set("SyntheticTokenFacility", id.toString(), this);
   }
 
-  static load(id: string): CreatedToken | null {
-    return store.get("CreatedToken", id) as CreatedToken | null;
+  static load(id: string): SyntheticTokenFacility | null {
+    return store.get(
+      "SyntheticTokenFacility",
+      id
+    ) as SyntheticTokenFacility | null;
   }
 
   get id(): string {
@@ -40,23 +46,6 @@ export class CreatedToken extends Entity {
 
   set id(value: string) {
     this.set("id", Value.fromString(value));
-  }
-
-  get count(): BigInt | null {
-    let value = this.get("count");
-    if (value === null) {
-      return null;
-    } else {
-      return value.toBigInt();
-    }
-  }
-
-  set count(value: BigInt | null) {
-    if (value === null) {
-      this.unset("count");
-    } else {
-      this.set("count", Value.fromBigInt(value as BigInt));
-    }
   }
 
   get creator(): string {
@@ -86,17 +75,25 @@ export class CreatedToken extends Entity {
     this.set("contractAddress", Value.fromBytes(value));
   }
 
-  get synthetics(): Array<string> {
-    let value = this.get("synthetics");
-    return value.toStringArray();
+  get synthetic(): string | null {
+    let value = this.get("synthetic");
+    if (value === null) {
+      return null;
+    } else {
+      return value.toString();
+    }
   }
 
-  set synthetics(value: Array<string>) {
-    this.set("synthetics", Value.fromStringArray(value));
+  set synthetic(value: string | null) {
+    if (value === null) {
+      this.unset("synthetic");
+    } else {
+      this.set("synthetic", Value.fromString(value as string));
+    }
   }
 }
 
-export class Synthetic extends Entity {
+export class SyntheticTokenMint extends Entity {
   constructor(id: string) {
     super();
     this.set("id", Value.fromString(id));
@@ -104,17 +101,17 @@ export class Synthetic extends Entity {
 
   save(): void {
     let id = this.get("id");
-    assert(id !== null, "Cannot save Synthetic entity without an ID");
+    assert(id !== null, "Cannot save SyntheticTokenMint entity without an ID");
     assert(
       id.kind == ValueKind.STRING,
-      "Cannot save Synthetic entity with non-string ID. " +
+      "Cannot save SyntheticTokenMint entity with non-string ID. " +
         'Considering using .toHex() to convert the "id" to a string.'
     );
-    store.set("Synthetic", id.toString(), this);
+    store.set("SyntheticTokenMint", id.toString(), this);
   }
 
-  static load(id: string): Synthetic | null {
-    return store.get("Synthetic", id) as Synthetic | null;
+  static load(id: string): SyntheticTokenMint | null {
+    return store.get("SyntheticTokenMint", id) as SyntheticTokenMint | null;
   }
 
   get id(): string {
@@ -126,13 +123,13 @@ export class Synthetic extends Entity {
     this.set("id", Value.fromString(value));
   }
 
-  get count(): Array<string | null> {
-    let value = this.get("count");
-    return value.toStringArray();
+  get token(): string {
+    let value = this.get("token");
+    return value.toString();
   }
 
-  set count(value: Array<string | null>) {
-    this.set("count", Value.fromStringArray(value));
+  set token(value: string) {
+    this.set("token", Value.fromString(value));
   }
 
   get creator(): Bytes {
@@ -142,6 +139,85 @@ export class Synthetic extends Entity {
 
   set creator(value: Bytes) {
     this.set("creator", Value.fromBytes(value));
+  }
+
+  get symbol(): string {
+    let value = this.get("symbol");
+    return value.toString();
+  }
+
+  set symbol(value: string) {
+    this.set("symbol", Value.fromString(value));
+  }
+
+  get tokensCreated(): BigInt {
+    let value = this.get("tokensCreated");
+    return value.toBigInt();
+  }
+
+  set tokensCreated(value: BigInt) {
+    this.set("tokensCreated", Value.fromBigInt(value));
+  }
+
+  get timestamp(): BigInt {
+    let value = this.get("timestamp");
+    return value.toBigInt();
+  }
+
+  set timestamp(value: BigInt) {
+    this.set("timestamp", Value.fromBigInt(value));
+  }
+
+  get name(): string {
+    let value = this.get("name");
+    return value.toString();
+  }
+
+  set name(value: string) {
+    this.set("name", Value.fromString(value));
+  }
+
+  get tokenBalance(): BigInt {
+    let value = this.get("tokenBalance");
+    return value.toBigInt();
+  }
+
+  set tokenBalance(value: BigInt) {
+    this.set("tokenBalance", Value.fromBigInt(value));
+  }
+}
+
+export class NetAssetValueUpdated extends Entity {
+  constructor(id: string) {
+    super();
+    this.set("id", Value.fromString(id));
+  }
+
+  save(): void {
+    let id = this.get("id");
+    assert(
+      id !== null,
+      "Cannot save NetAssetValueUpdated entity without an ID"
+    );
+    assert(
+      id.kind == ValueKind.STRING,
+      "Cannot save NetAssetValueUpdated entity with non-string ID. " +
+        'Considering using .toHex() to convert the "id" to a string.'
+    );
+    store.set("NetAssetValueUpdated", id.toString(), this);
+  }
+
+  static load(id: string): NetAssetValueUpdated | null {
+    return store.get("NetAssetValueUpdated", id) as NetAssetValueUpdated | null;
+  }
+
+  get id(): string {
+    let value = this.get("id");
+    return value.toString();
+  }
+
+  set id(value: string) {
+    this.set("id", Value.fromString(value));
   }
 
   get symbol(): string {
@@ -170,31 +246,288 @@ export class Synthetic extends Entity {
   set newTokenPrice(value: BigInt) {
     this.set("newTokenPrice", Value.fromBigInt(value));
   }
+}
 
-  get timestamp(): BigInt {
-    let value = this.get("timestamp");
-    return value.toBigInt();
+export class SyntheticContractSettled extends Entity {
+  constructor(id: string) {
+    super();
+    this.set("id", Value.fromString(id));
   }
 
-  set timestamp(value: BigInt) {
-    this.set("timestamp", Value.fromBigInt(value));
+  save(): void {
+    let id = this.get("id");
+    assert(
+      id !== null,
+      "Cannot save SyntheticContractSettled entity without an ID"
+    );
+    assert(
+      id.kind == ValueKind.STRING,
+      "Cannot save SyntheticContractSettled entity with non-string ID. " +
+        'Considering using .toHex() to convert the "id" to a string.'
+    );
+    store.set("SyntheticContractSettled", id.toString(), this);
   }
 
-  get name(): string {
-    let value = this.get("name");
+  static load(id: string): SyntheticContractSettled | null {
+    return store.get(
+      "SyntheticContractSettled",
+      id
+    ) as SyntheticContractSettled | null;
+  }
+
+  get id(): string {
+    let value = this.get("id");
     return value.toString();
   }
 
-  set name(value: string) {
-    this.set("name", Value.fromString(value));
+  set id(value: string) {
+    this.set("id", Value.fromString(value));
   }
 
-  get totalSupply(): BigDecimal {
-    let value = this.get("totalSupply");
-    return value.toBigDecimal();
+  get symbol(): string {
+    let value = this.get("symbol");
+    return value.toString();
   }
 
-  set totalSupply(value: BigDecimal) {
-    this.set("totalSupply", Value.fromBigDecimal(value));
+  set symbol(value: string) {
+    this.set("symbol", Value.fromString(value));
+  }
+
+  get settleTime(): BigInt {
+    let value = this.get("settleTime");
+    return value.toBigInt();
+  }
+
+  set settleTime(value: BigInt) {
+    this.set("settleTime", Value.fromBigInt(value));
+  }
+
+  get finalNav(): BigInt {
+    let value = this.get("finalNav");
+    return value.toBigInt();
+  }
+
+  set finalNav(value: BigInt) {
+    this.set("finalNav", Value.fromBigInt(value));
+  }
+}
+
+export class SyntheticContractExpired extends Entity {
+  constructor(id: string) {
+    super();
+    this.set("id", Value.fromString(id));
+  }
+
+  save(): void {
+    let id = this.get("id");
+    assert(
+      id !== null,
+      "Cannot save SyntheticContractExpired entity without an ID"
+    );
+    assert(
+      id.kind == ValueKind.STRING,
+      "Cannot save SyntheticContractExpired entity with non-string ID. " +
+        'Considering using .toHex() to convert the "id" to a string.'
+    );
+    store.set("SyntheticContractExpired", id.toString(), this);
+  }
+
+  static load(id: string): SyntheticContractExpired | null {
+    return store.get(
+      "SyntheticContractExpired",
+      id
+    ) as SyntheticContractExpired | null;
+  }
+
+  get id(): string {
+    let value = this.get("id");
+    return value.toString();
+  }
+
+  set id(value: string) {
+    this.set("id", Value.fromString(value));
+  }
+
+  get symbol(): string {
+    let value = this.get("symbol");
+    return value.toString();
+  }
+
+  set symbol(value: string) {
+    this.set("symbol", Value.fromString(value));
+  }
+
+  get expiryTime(): BigInt {
+    let value = this.get("expiryTime");
+    return value.toBigInt();
+  }
+
+  set expiryTime(value: BigInt) {
+    this.set("expiryTime", Value.fromBigInt(value));
+  }
+}
+
+export class SyntheticTokensRedeemed extends Entity {
+  constructor(id: string) {
+    super();
+    this.set("id", Value.fromString(id));
+  }
+
+  save(): void {
+    let id = this.get("id");
+    assert(
+      id !== null,
+      "Cannot save SyntheticTokensRedeemed entity without an ID"
+    );
+    assert(
+      id.kind == ValueKind.STRING,
+      "Cannot save SyntheticTokensRedeemed entity with non-string ID. " +
+        'Considering using .toHex() to convert the "id" to a string.'
+    );
+    store.set("SyntheticTokensRedeemed", id.toString(), this);
+  }
+
+  static load(id: string): SyntheticTokensRedeemed | null {
+    return store.get(
+      "SyntheticTokensRedeemed",
+      id
+    ) as SyntheticTokensRedeemed | null;
+  }
+
+  get id(): string {
+    let value = this.get("id");
+    return value.toString();
+  }
+
+  set id(value: string) {
+    this.set("id", Value.fromString(value));
+  }
+
+  get symbol(): string {
+    let value = this.get("symbol");
+    return value.toString();
+  }
+
+  set symbol(value: string) {
+    this.set("symbol", Value.fromString(value));
+  }
+
+  get numTokensRedeemed(): BigInt {
+    let value = this.get("numTokensRedeemed");
+    return value.toBigInt();
+  }
+
+  set numTokensRedeemed(value: BigInt) {
+    this.set("numTokensRedeemed", Value.fromBigInt(value));
+  }
+}
+
+export class MarginCurrencyDeposited extends Entity {
+  constructor(id: string) {
+    super();
+    this.set("id", Value.fromString(id));
+  }
+
+  save(): void {
+    let id = this.get("id");
+    assert(
+      id !== null,
+      "Cannot save MarginCurrencyDeposited entity without an ID"
+    );
+    assert(
+      id.kind == ValueKind.STRING,
+      "Cannot save MarginCurrencyDeposited entity with non-string ID. " +
+        'Considering using .toHex() to convert the "id" to a string.'
+    );
+    store.set("MarginCurrencyDeposited", id.toString(), this);
+  }
+
+  static load(id: string): MarginCurrencyDeposited | null {
+    return store.get(
+      "MarginCurrencyDeposited",
+      id
+    ) as MarginCurrencyDeposited | null;
+  }
+
+  get id(): string {
+    let value = this.get("id");
+    return value.toString();
+  }
+
+  set id(value: string) {
+    this.set("id", Value.fromString(value));
+  }
+
+  get symbol(): string {
+    let value = this.get("symbol");
+    return value.toString();
+  }
+
+  set symbol(value: string) {
+    this.set("symbol", Value.fromString(value));
+  }
+
+  get amount(): BigInt {
+    let value = this.get("amount");
+    return value.toBigInt();
+  }
+
+  set amount(value: BigInt) {
+    this.set("amount", Value.fromBigInt(value));
+  }
+}
+
+export class MarginCurrencyWithdrawn extends Entity {
+  constructor(id: string) {
+    super();
+    this.set("id", Value.fromString(id));
+  }
+
+  save(): void {
+    let id = this.get("id");
+    assert(
+      id !== null,
+      "Cannot save MarginCurrencyWithdrawn entity without an ID"
+    );
+    assert(
+      id.kind == ValueKind.STRING,
+      "Cannot save MarginCurrencyWithdrawn entity with non-string ID. " +
+        'Considering using .toHex() to convert the "id" to a string.'
+    );
+    store.set("MarginCurrencyWithdrawn", id.toString(), this);
+  }
+
+  static load(id: string): MarginCurrencyWithdrawn | null {
+    return store.get(
+      "MarginCurrencyWithdrawn",
+      id
+    ) as MarginCurrencyWithdrawn | null;
+  }
+
+  get id(): string {
+    let value = this.get("id");
+    return value.toString();
+  }
+
+  set id(value: string) {
+    this.set("id", Value.fromString(value));
+  }
+
+  get symbol(): string {
+    let value = this.get("symbol");
+    return value.toString();
+  }
+
+  set symbol(value: string) {
+    this.set("symbol", Value.fromString(value));
+  }
+
+  get amount(): BigInt {
+    let value = this.get("amount");
+    return value.toBigInt();
+  }
+
+  set amount(value: BigInt) {
+    this.set("amount", Value.fromBigInt(value));
   }
 }

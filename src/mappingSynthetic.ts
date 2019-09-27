@@ -1,4 +1,4 @@
-import { BigInt, Address } from "@graphprotocol/graph-ts"
+import { BigInt, Address, log } from "@graphprotocol/graph-ts"
 import {
   Synthetic as SyntheticContract,
   NavUpdated,
@@ -14,63 +14,34 @@ import {
   Transfer,
   Approval
 } from "../generated/templates/Synthetic/Synthetic"
-import { Synthetic } from "../generated/schema"
+import { 
+  SyntheticTokenMint, 
+  NetAssetValueUpdated, 
+  SyntheticContractSettled, 
+  SyntheticContractExpired, 
+  SyntheticTokensRedeemed, 
+  MarginCurrencyDeposited,
+  MarginCurrencyWithdrawn
+} from "../generated/schema"
 
-function getSyntheticContractInstance (address: Address):
-SyntheticContract {
-  return SyntheticContract.bind(address)
-}
+// function getSyntheticContractInstance (address: Address):
+// SyntheticContract {
+//   return SyntheticContract.bind(address)
+// }
 
 export function handleNavUpdated(event: NavUpdated): void {
-  // Entities can be loaded from the store using a string ID; this ID
-  // needs to be unique across all entities of the same type
-  // let entity = Synthetic.load(event.transaction.from.toHex())
 
-  // // Entities only exist after they have been saved to the store;
-  // // `null` checks allow to create entities on demand
-  // if (entity == null) {
-  //   entity = new Synthetic(event.transaction.from.toHex())
+  log.warning('Update Net Asset Value(NAV): {}', [event.address.toHex()])
+  let entity = new NetAssetValueUpdated(event.address.toHex())
 
-  //   // Entity fields can be set using simple assignments
-  //   entity.count = BigInt.fromI32(0)
-  // }
-
-  let syntheticContract = getSyntheticContractInstance(event.address)
-
-  let contractId = event.transaction.from.toHex()
-  let entity = new Synthetic(syntheticContract._address.toHexString())
-
-
-  // BigInt and BigDecimal math are supported
-  // entity.count = entity.count.plus(BigInt.fromI32(1))
-
+  // let syntheticContract = SyntheticContract.bind(event.address)
   // Entity fields can be set based on event parameters
   entity.symbol = event.params.symbol
   entity.newNav = event.params.newNav
   entity.newTokenPrice = event.params.newTokenPrice
-  entity.creator = event.transaction.from
-  entity.timestamp = event.block.timestamp
-
-  // Entities can be written to the store with `.save()`
-  // let syntheticContract = getSyntheticContractInstance(event.address)
-  entity.name = syntheticContract.name()
-  entity.totalSupply = syntheticContract.totalSupply().toBigDecimal()
 
   entity.save()
 
-  // Note: If a handler doesn't require existing field values, it is faster
-  // _not_ to load the entity from the store. Instead, create it fresh with
-  // `new Entity(...)`, set the fields that should be updated and save the
-  // entity back to the store. Fields that were not set or unset remain
-  // unchanged, allowing for partial updates to be applied.
-
-  // It is also possible to access smart contracts from mappings. For
-  // example, the contract that has emitted the event can be connected to
-  // with:
-  //
-  // let contract = SyntheticContract.bind(event.address)
-
-  //
   // The following functions can then be called on this contract to access
   // state variables and other data:
   //
@@ -98,9 +69,35 @@ export function handleNavUpdated(event: NavUpdated): void {
 
 export function handleDefault(event: Default): void {}
 
-export function handleSettled(event: Settled): void {}
+export function handleSettled(event: Settled): void {
 
-export function handleExpired(event: Expired): void {}
+  log.warning('Update Net Asset Value(NAV): {}', [event.address.toHex()])
+  let entity = new SyntheticContractSettled(event.address.toHex())
+
+  // let syntheticContract = SyntheticContract.bind(event.address)
+  // Entity fields can be set based on event parameters
+  entity.symbol = event.params.symbol
+  entity.settleTime = event.params.settleTime
+  entity.finalNav = event.params.finalNav
+
+  entity.save()
+
+
+}
+
+export function handleExpired(event: Expired): void {
+
+  log.warning('Update Net Asset Value(NAV): {}', [event.address.toHex()])
+  let entity = new SyntheticContractExpired(event.address.toHex())
+
+  // let syntheticContract = SyntheticContract.bind(event.address)
+  // Entity fields can be set based on event parameters
+  entity.symbol = event.params.symbol
+  entity.expiryTime = event.params.expiryTime
+
+  entity.save()
+
+}
 
 export function handleDisputed(event: Disputed): void {}
 
@@ -108,13 +105,71 @@ export function handleEmergencyShutdownTransition(
   event: EmergencyShutdownTransition
 ): void {}
 
-export function handleTokensCreated(event: TokensCreated): void {}
+export function handleTokensCreated(event: TokensCreated): void {
 
-export function handleTokensRedeemed(event: TokensRedeemed): void {}
+  
+  log.warning('Mint Synthetic Token: {}', [event.address.toHex()])
+  let entity = new SyntheticTokenMint(event.address.toHex())
 
-export function handleDeposited(event: Deposited): void {}
+  let syntheticContract = SyntheticContract.bind(event.address)
+  // Entity fields can be set based on event parameters
+  entity.symbol = event.params.symbol
+  entity.tokensCreated = event.params.numTokensCreated
+  entity.creator = event.transaction.from
+  entity.timestamp = event.block.timestamp
 
-export function handleWithdrawal(event: Withdrawal): void {}
+  // Entities can be written to the store with `.save()`
+  // let syntheticContract = getSyntheticContractInstance(event.address)
+  entity.name = syntheticContract.name()
+  entity.tokenBalance = syntheticContract.totalSupply()
+
+  entity.save()
+
+
+
+}
+
+export function handleTokensRedeemed(event: TokensRedeemed): void {
+  
+  log.warning('Update Net Asset Value(NAV): {}', [event.address.toHex()])
+  let entity = new SyntheticTokensRedeemed(event.address.toHex())
+
+  // let syntheticContract = SyntheticContract.bind(event.address)
+  // Entity fields can be set based on event parameters
+  entity.symbol = event.params.symbol
+  entity.numTokensRedeemed = event.params.numTokensRedeemed
+
+  entity.save()
+
+}
+
+export function handleDeposited(event: Deposited): void {
+
+  log.warning('Update Net Asset Value(NAV): {}', [event.address.toHex()])
+  let entity = new MarginCurrencyDeposited(event.address.toHex())
+
+  // let syntheticContract = SyntheticContract.bind(event.address)
+  // Entity fields can be set based on event parameters
+  entity.symbol = event.params.symbol
+  entity.amount = event.params.amount
+
+  entity.save()
+
+
+}
+
+export function handleWithdrawal(event: Withdrawal): void {
+
+  log.warning('Update Net Asset Value(NAV): {}', [event.address.toHex()])
+  let entity = new MarginCurrencyWithdrawn(event.address.toHex())
+
+  // let syntheticContract = SyntheticContract.bind(event.address)
+  // Entity fields can be set based on event parameters
+  entity.symbol = event.params.symbol
+  entity.amount = event.params.amount
+
+  entity.save()
+}
 
 export function handleTransfer(event: Transfer): void {}
 
